@@ -7,5 +7,6 @@ import config as cfg
 def read_images():
     pass
 
+
 def write_features():
     pass
