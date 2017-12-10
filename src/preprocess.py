@@ -1,6 +1,5 @@
 import config as cfg
 import numpy as np
-from skimage.feature import greycomatrix
 import cv2
 
 
@@ -8,8 +7,9 @@ class Features(object):
 
     def __init__(self, image_path):
         self.img = cv2.imread(image_path)
-        self.vector = None
+        self.feature_vector = None
         self._resize()
+        self.create_feature_vector()
 
     def _resize(self):
         self.img = cv2.resize(self.img, None, fx=cfg.IMAGE_SCALE, fy=cfg.IMAGE_SCALE)
@@ -53,7 +53,7 @@ class Features(object):
 
         """
 
-        hist, bins = np.histogram(channel, num_bins, min_value, max_value, density=True)
+        hist, bins = np.histogram(channel, num_bins, (min_value, max_value), density=True)
         max_hist_value = np.max(hist)
         min_hist_value = np.min(hist)
         median = np.median(hist)
@@ -87,7 +87,16 @@ class Features(object):
 
         return vector
 
+    def create_feature_vector(self):
+        # Append RGB features
+        feature_vector = self.extract_rgb_histogram()
+
+        # Append HSV features
+        feature_vector.extend(self.extract_hsv_histogram())
+
+        self.feature_vector = np.asarray(feature_vector)
+
     def get_feature_vector(self):
-        pass
+        return self.feature_vector
 
 
