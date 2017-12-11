@@ -87,6 +87,9 @@ class Features(object):
 
         return vector
 
+    def get_feature_vector(self):
+        return self.feature_vector
+
     def create_feature_vector(self):
         # Append RGB features
         feature_vector = self.extract_rgb_histogram()
@@ -95,8 +98,5 @@ class Features(object):
         feature_vector.extend(self.extract_hsv_histogram())
 
         self.feature_vector = np.asarray(feature_vector)
-
-    def get_feature_vector(self):
-        return self.feature_vector
 
 
