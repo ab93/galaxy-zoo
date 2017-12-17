@@ -1,27 +1,35 @@
 import os
-import numpy as np
 import pandas as pd
 import config as cfg
 import csv
-from preprocess import Features
+from features import Features
 
 
-def write_features(image_name, feature_row):
-    galaxy_id = image_name.split('.')[0]
-    row = pd.Series(np.concatenate(([galaxy_id], feature_row)))
-    with open(os.path.join(cfg.TRAIN_DATA_FILE, 'training_data.csv')) as train_file:
-        csv_writer = csv.writer(train_file)
-        csv_writer.writerow(row)
-
+def get_galaxy_ids():
+    df = pd.read_csv(cfg.TRAIN_SOLUTION_FILE, usecols=[0])
+    return df.GalaxyID
 
 
 def read_images():
-
-    for image_file in os.listdir(cfg.TRAIN_IMAGE_DIR):
+    galaxy_ids = get_galaxy_ids()
+    for galaxy_id in galaxy_ids:
+        image_file = '.'.join([str(galaxy_id), 'jpg'])
+        feature_vector = [galaxy_id]
         features = Features(os.path.join(cfg.TRAIN_IMAGE_DIR, image_file))
-        feature_vector = features.get_feature_vector()
-        write_features(image_file, feature_vector)
+        feature_vector.extend(features.get_feature_vector())
+        yield feature_vector
+
+
+def write_features():
+    with open(cfg.TRAIN_DATA_FILE, 'wb') as train_file:
+        csv_writer = csv.writer(train_file)
+        count = 0
+        csv_writer.writerow(Features.get_header())
+        for row in read_images():
+            csv_writer.writerow(row)
+            print count
+            count += 1
 
 
 if __name__ == '__main__':
-    read_images()
+    write_features()

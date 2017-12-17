@@ -5,6 +5,8 @@ import cv2
 
 class Features(object):
 
+    num_bins = 8
+
     def __init__(self, image_path):
         self.img = cv2.imread(image_path)
         self.feature_vector = None
@@ -68,7 +70,7 @@ class Features(object):
 
         vector = []
         for idx in range(3):
-            vector.extend(self.get_color_space_vector(self.img[:, :, idx], 8, 0, 256))
+            vector.extend(self.get_color_space_vector(self.img[:, :, idx], self.num_bins, 0, 256))
         return vector
 
     def extract_hsv_histogram(self):
@@ -81,9 +83,9 @@ class Features(object):
         img_hsv = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
         vector = []
 
-        vector.extend(self.get_color_space_vector(img_hsv[:, :, 0], 8, 0, 180))
-        vector.extend(self.get_color_space_vector(img_hsv[:, :, 1], 8, 0, 256))
-        vector.extend(self.get_color_space_vector(img_hsv[:, :, 2], 8, 0, 256))
+        vector.extend(self.get_color_space_vector(img_hsv[:, :, 0], self.num_bins, 0, 180))
+        vector.extend(self.get_color_space_vector(img_hsv[:, :, 1], self.num_bins, 0, 256))
+        vector.extend(self.get_color_space_vector(img_hsv[:, :, 2], self.num_bins, 0, 256))
 
         return vector
 
@@ -99,4 +101,15 @@ class Features(object):
 
         self.feature_vector = np.asarray(feature_vector)
 
+    @classmethod
+    def get_header(cls):
+        stats = [str(bin_) for bin_ in range(cls.num_bins)]
+        stats.extend(['max', 'min', 'median'])
 
+        bgr_color_codes = ['B', 'G', 'R']
+        bgr_header = ["{}_{}".format(channel, stat) for channel in bgr_color_codes for stat in stats]
+
+        hsv_color_codes = ['H', 'S', 'V']
+        hsv_header = ["{}_{}".format(channel, stat) for channel in hsv_color_codes for stat in stats]
+
+        return ['galaxy_id'] + bgr_header + hsv_header
