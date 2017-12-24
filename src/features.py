@@ -112,4 +112,4 @@ class Features(object):
         hsv_color_codes = ['H', 'S', 'V']
         hsv_header = ["{}_{}".format(channel, stat) for channel in hsv_color_codes for stat in stats]
 
-        return ['galaxy_id'] + bgr_header + hsv_header
+        return ['GalaxyID'] + bgr_header + hsv_header
