@@ -19,6 +19,7 @@ def calculate_f_scores():
         f_score, p_score = f_regression(feature_df, target_df[class_name])
         f_score /= np.max(f_score)
         scores_df = pd.DataFrame({'f_score': f_score, 'p_score': p_score}, index=feature_df.columns)
+        scores_df = scores_df[scores_df['p_score'] > 0]
         scores_df.to_csv(os.path.join(cfg.ANALYSIS_DIR, '{}_scores.csv'.format(class_name)))
 
 
@@ -31,5 +32,5 @@ def scatter_plot():
 
 
 if __name__ == '__main__':
-    # calculate_f_scores()
-    scatter_plot()
+    calculate_f_scores()
+    # scatter_plot()
